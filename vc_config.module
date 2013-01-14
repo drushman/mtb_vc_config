@@ -1,0 +1,68 @@
+<?php
+define(VC_CONFIG_STYLE_NAME, 'forum_thumbnail');
+
+/**
+ * Implements template_preprocess_views_view_list($vars).
+ */
+function vc_config_preprocess_views_view_list(&$vars) {
+//  kpr($vars);exit;
+  $vars['class_header_wrapper'] = 'node-header-wrapper-non-images';
+  $nid = $vars['title'];
+  $node = node_load($nid);
+
+  if ($node->type == 'photos') {
+    $img_url = $node->field_images[0]['filepath'];
+  }
+  if ($node->type == 'embedded_video') {
+    $img_url = $node->field_embedded_video[0]['data']['emthumb']['filepath'];
+  }
+  if (isset($img_url)) {
+    $image = theme('imagecache', VC_CONFIG_STYLE_NAME, $img_url);
+    $vars['image_thumbnail'] = $image; 
+    $vars['class_header_wrapper'] = 'node-header-wrapper-images';
+  }
+  
+  $vars['title'] = $node->title;
+  $vars['node_type'] = $node->type;
+}
+
+/**
+ * Implementation of hook_block().
+ *
+ * This hook both declares to Drupal what blocks are provided by the module, and
+ * generates the contents of the blocks themselves.
+ */
+function vc_config_block($op = 'list', $delta = '', $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks['forum_filter'] = array(
+        'info'       => t('Show comments from:'),
+        'status'     => TRUE,
+        'weight'     => 0,
+        'visibility' => 1,
+        'pages'      => 'forum',
+      );
+      return $blocks;
+    case 'view':
+      
+      switch ($delta) {
+        case 'forum_filter':
+          $block['subject'] = t('Show comments from:');
+          $block['content'] = vc_config_views_filter();
+          break;
+      }
+      return $block;
+  }
+}
+
+function vc_config_views_filter() {
+  $view = views_get_view('comments_recent', TRUE);
+  $view->set_display('page');
+  $types = $view->display_handler->display->display_options['filters']['type']['value'];
+  $links = array();
+  foreach ($types as $type) {
+    $obs = node_get_types();
+    $links[] = "<a href='forum?type={$type}'><div class=link-left><h3>{$obs[$type]->name}</h3></div><span class='type-{$type}'></span></a>";
+  }
+  return theme_item_list($links, NULL, 'ul', array('class' => 'filter-content-list'));
+}

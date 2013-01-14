@@ -1,0 +1,4 @@
+name = VC Config
+description = Custom configuration
+core = 6.x
+package = "Viet Coop"
