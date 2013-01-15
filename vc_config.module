@@ -37,7 +37,7 @@ function vc_config_block($op = 'list', $delta = '', $edit = array()) {
     case 'list':
       $blocks['forum_filter'] = array(
         'info'       => t('Show comments from:'),
-        'status'     => TRUE,
+        'status'     => 1,
         'weight'     => 0,
         'visibility' => 1,
         'region' => 'sidebar_first',
