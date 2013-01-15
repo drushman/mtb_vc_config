@@ -40,6 +40,7 @@ function vc_config_block($op = 'list', $delta = '', $edit = array()) {
         'status'     => TRUE,
         'weight'     => 0,
         'visibility' => 1,
+        'region' => 'sidebar_first',
         'pages'      => 'forum',
       );
       return $blocks;
