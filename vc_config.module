@@ -5,7 +5,10 @@ define(VC_CONFIG_STYLE_NAME, 'forum_thumbnail');
  * Implements template_preprocess_views_view_list($vars).
  */
 function vc_config_preprocess_views_view_list(&$vars) {
-//  kpr($vars);exit;
+  
+  if ($vars['view']->name != 'comments_recent' || $vars['view']->current_display != 'page') {
+    return;
+  }
   $vars['class_header_wrapper'] = 'node-header-wrapper-non-images';
   $nid = $vars['title'];
   $node = node_load($nid);
@@ -38,9 +41,9 @@ function vc_config_block($op = 'list', $delta = '', $edit = array()) {
       $blocks['forum_filter'] = array(
         'info'       => t('Show comments from:'),
         'status'     => 1,
+        'region' => 'sidebar_first',
         'weight'     => 0,
         'visibility' => 1,
-        'region' => 'sidebar_first',
         'pages'      => 'forum',
       );
       return $blocks;
