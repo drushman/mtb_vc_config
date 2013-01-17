@@ -60,13 +60,21 @@ function vc_config_block($op = 'list', $delta = '', $edit = array()) {
 }
 
 function vc_config_views_filter() {
+  $sql = "SELECT node.type FROM comments LEFT JOIN node ON comments.nid = node.nid GROUP BY node.type";
+  $result =  db_query($sql);
+  while ($type = db_fetch_array($result)) {
+    $types_active[] = $type['type'];
+  }
+  
   $view = views_get_view('comments_recent', TRUE);
   $view->set_display('page');
   $types = $view->display_handler->display->display_options['filters']['type']['value'];
   $links = array();
   foreach ($types as $type) {
     $obs = node_get_types();
-    $links[] = "<a href='forum?type={$type}'><div class=link-left><h3>{$obs[$type]->name}</h3></div><span class='type-{$type}'></span></a>";
+    $active = in_array($type, $types_active) ? 'active' : 'disable';
+    $link = in_array($type, $types_active) ? "forum?type={$type}" : '#';
+    $links[] = "<div class='content-list {$active}'><a class='{$active}' href='{$link}'><div class='link-left'><h3>{$obs[$type]->name}</h3></div><span class='type-{$type}'></span></a></div>";
   }
   return theme_item_list($links, NULL, 'ul', array('class' => 'filter-content-list'));
 }
