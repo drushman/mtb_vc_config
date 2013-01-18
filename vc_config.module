@@ -25,7 +25,7 @@ function vc_config_preprocess_views_view_list(&$vars) {
     $vars['class_header_wrapper'] = 'node-header-wrapper-images';
   }
   
-  $vars['title'] = $node->title;
+  $vars['title'] = l($node->title, "node/{$node->nid}");
   $vars['node_type'] = $node->type;
 }
 
